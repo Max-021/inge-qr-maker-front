@@ -12,15 +12,31 @@
                     <th>Acciones</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody v-if="isLoading">
                 <tr>
-                    <td>asd#1</td>
-                    <td>asd#2</td>
-                    <td>asd#3</td>
-                    <td>asd#4</td>
-                    <td>asd#5</td>
+                    <td colspan="6" class="spinner-container">
+                        <Spinner></Spinner>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody v-else-if="codigosCreados.length">
+                <tr v-for="(codigo, index) in codigosCreados" :key="index">
+                    <td>{{codigo.cliente}}</td>
+                    <td>{{codigo.unidad}}</td>
+                    <td>{{codigo.contacto}}</td>
+                    <td>{{codigo.telefono}}</td>
+                    <td>{{codigo.equipo}}</td>
                     <td class="acciones">
 
+                    </td>
+                </tr>
+            </tbody>
+            <tbody v-else>
+                <tr>
+                    <td colspan="6" class="no-results">
+                        <h3>
+                            Todavía no hay códigos creados
+                        </h3>
                     </td>
                 </tr>
             </tbody>
@@ -80,6 +96,15 @@ table tbody tr td{
     padding-top: .5em;
     padding-bottom: .5em;
     position: relative;
+}
+.spinner-container{
+    width: 100%;
+    height: 150px;
+    overflow-y: hidden;
+    text-align: center;
+    color: white;
+    text-shadow: 0px 1px 7px rgba(0, 0, 0, 0.8);
+    font-size: 20px;
 }
 .no-results{
     text-align: center;
@@ -151,9 +176,40 @@ table tbody tr td{
 }
 </style>
 <script>
+import axios from 'axios'
+import {ref} from 'vue'
+import Spinner from './Spinner.vue'
+
 export default {
+    components:{Spinner},
     setup() {
-        
+        const codigosCreados = ref([])
+        const isLoading = ref(false)
+        const getQrs = () => {
+            isLoading.value = true
+            try{
+                axios.get('http://localhost:3001/qr/')
+                .then(response => {
+                    codigosCreados.value = response.data
+                    // isLoading.value = false
+                })
+                .catch(function (error) {
+                    console.log(error);
+                })
+            }
+            catch(e){
+                console.log(e)
+                // isLoading.value = false
+            }
+        }
+        return {
+            getQrs,
+            codigosCreados,
+            isLoading
+        }
     },
+    created(){
+        this.getQrs()
+    }
 }
 </script>

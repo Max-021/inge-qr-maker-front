@@ -26,13 +26,13 @@
                                     type="checkbox" 
                                     :name="obj.cliente" 
                                     :id="obj.cliente+'-'+index"
-                                    :value="obj.uri"
+                                    :value="obj.cliente+obj.unidad+obj.equipo"
                                     v-model="selectedQrs"
                                     class="checkmark"
                                     number>
                                 <label 
                                     :for="obj.cliente+'-'+index">
-                                    {{obj.cliente}} - {{obj.equipo}}
+                                    {{obj.cliente}} - {{obj.unidad}} - {{obj.equipo}}
                                 </label>
                             </li>
                         </ul>
@@ -42,7 +42,6 @@
                             <button type="button" class="button-green"
                                 @click="crearQrs">Crear QRs!</button>
                         </div>
-                        {{hayAlgunSeleccionado}}
                     </div>
                     <div class="empty-message" v-else>
                         No hay QRs para crear
@@ -322,12 +321,12 @@ textarea{
 }
 </style>
 <script>
+import axios from 'axios'
 import {computed, ref} from 'vue'
-
 export default {
     name:'Code Create',
     setup() {
-        const basicData = ref('[{"_id":"614a8791f776365c014a0c3c","cliente":"MUNIC. SAN MIGUEL","unidad":"HTAL. LARCADE","contacto":"","telefono":"","equipo":"SIEMENS, POLYMAT 2010","uri":"https://www.ingeray.com.ar/inge_system/alta-servicio-tecnico?cliente=MUNIC. SAN MIGUEL&unidad=HTAL. LARCADE&contacto=&telefono=EQUIPO DE PRUEBA1","fileName":"municsanmiguel-htallarcade-siemenspolymat2010.png","__v":0},{"_id":"614a8791f776365c014a0c3c","cliente":"MUNIC. SAN MIGUEL","unidad":"HTAL. LARCADE","contacto":"","telefono":"","equipo":"SIEMENS, POLYMAT 2010","uri":"https://www.ingeray.com.ar/inge_system/alta-servicio-tecnico?cliente=MUNIC. SAN MIGUEL&unidad=HTAL. LARCADE&contacto=&telefono=EQUIPO DE PRUEBA2","fileName":"municsanmiguel-htallarcade-siemenspolymat2010.png","__v":0},{"_id":"614a8791f776365c014a0c3c","cliente":"MUNIC. SAN MIGUEL","unidad":"HTAL. LARCADE","contacto":"","telefono":"","equipo":"SIEMENS, POLYMAT 2010","uri":"https://www.ingeray.com.ar/inge_system/alta-servicio-tecnico?cliente=MUNIC. SAN MIGUEL&unidad=HTAL. LARCADE&contacto=&telefono=EQUIPO DE PRUEBA3","fileName":"municsanmiguel-htallarcade-siemenspolymat2010.png","__v":0},{"_id":"614a8791f776365c014a0c3c","cliente":"MUNIC. SAN MIGUEL","unidad":"HTAL. LARCADE","contacto":"","telefono":"","equipo":"SIEMENS, POLYMAT 2010","uri":"https://www.ingeray.com.ar/inge_system/alta-servicio-tecnico?cliente=MUNIC. SAN MIGUEL&unidad=HTAL. LARCADE&contacto=&telefono=EQUIPO DE PRUEBA4","fileName":"municsanmiguel-htallarcade-siemenspolymat2010.png","__v":0},{"_id":"614a8791f776365c014a0c3c","cliente":"MUNIC. SAN MIGUEL","unidad":"HTAL. LARCADE","contacto":"","telefono":"","equipo":"SIEMENS, POLYMAT 2010","uri":"https://www.ingeray.com.ar/inge_system/alta-servicio-tecnico?cliente=MUNIC. SAN MIGUEL&unidad=HTAL. LARCADE&contacto=&telefono=EQUIPO DE PRUEBA5","fileName":"municsanmiguel-htallarcade-siemenspolymat2010.png","__v":0},{"_id":"614a8791f776365c014a0c3c","cliente":"MUNIC. SAN MIGUEL","unidad":"HTAL. LARCADE","contacto":"","telefono":"","equipo":"SIEMENS, POLYMAT 2010","uri":"https://www.ingeray.com.ar/inge_system/alta-servicio-tecnico?cliente=MUNIC. SAN MIGUEL&unidad=HTAL. LARCADE&contacto=&telefono=EQUIPO DE PRUEBA6","fileName":"municsanmiguel-htallarcade-siemenspolymat2010.png","__v":0},{"_id":"614a8791f776365c014a0c3c","cliente":"MUNIC. SAN MIGUEL","unidad":"HTAL. LARCADE","contacto":"","telefono":"","equipo":"SIEMENS, POLYMAT 2010","uri":"https://www.ingeray.com.ar/inge_system/alta-servicio-tecnico?cliente=MUNIC. SAN MIGUEL&unidad=HTAL. LARCADE&contacto=&telefono=EQUIPO DE PRUEBA7","fileName":"municsanmiguel-htallarcade-siemenspolymat2010.png","__v":0},{"_id":"614a8791f776365c014a0c3c","cliente":"MUNIC. SAN MIGUEL","unidad":"HTAL. LARCADE","contacto":"","telefono":"","equipo":"SIEMENS, POLYMAT 2010","uri":"https://www.ingeray.com.ar/inge_system/alta-servicio-tecnico?cliente=MUNIC. SAN MIGUEL&unidad=HTAL. LARCADE&contacto=&telefono=EQUIPO DE PRUEBA8","fileName":"municsanmiguel-htallarcade-siemenspolymat2010.png","__v":0},{"_id":"614a8791f776365c014a0c3c","cliente":"MUNIC. SAN MIGUEL","unidad":"HTAL. LARCADE","contacto":"","telefono":"","equipo":"SIEMENS, POLYMAT 2010","uri":"https://www.ingeray.com.ar/inge_system/alta-servicio-tecnico?cliente=MUNIC. SAN MIGUEL&unidad=HTAL. LARCADE&contacto=&telefono=EQUIPO DE PRUEBA9","fileName":"municsanmiguel-htallarcade-siemenspolymat2010.png","__v":0}]')
+        const basicData = ref('[{"cliente": "HOSPITAL#1", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 1"}, {"cliente": "HOSPITAL#2", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 2"}, {"cliente": "HOSPITAL#3", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 3"}, {"cliente": "HOSPITAL#4", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 4"}, {"cliente": "HOSPITAL#5", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 5"}, {"cliente": "HOSPITAL#6", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 6"}, {"cliente": "HOSPITAL7", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 7"}, {"cliente": "HOSPITAL#8", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 8"}]')
         const parsedData = computed(() => {
             return JSON.parse(basicData.value)
         })
@@ -360,13 +359,20 @@ export default {
                 inputs.forEach(input => input.checked = true)
             }
         }
+        const postQr = (qrArray) => {
+            qrArray.forEach(regBody => {
+                axios.post('http://localhost:3001/qr/create', regBody)
+            })
+        }
         const crearQrs = () => {
             if(allSelected.value){
                 console.log('Te imprimo todos')
                 console.log(allSelectedQrs.value)
+                postQr(allSelected.value)
             } else if(hayAlgunSeleccionado.value) {
                 console.log('Te imprimo algunos')
                 console.log(selectedQrs.value)
+                postQr(selectedQrs.value)
             } else {
                 console.log('No hay ningun registro seleccionado')
             }
@@ -381,6 +387,7 @@ export default {
             allSelectedQrs,
             hayAlgunSeleccionado,
             checkAll,
+            postQr,
             crearQrs
         }
     },
