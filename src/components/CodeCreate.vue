@@ -16,31 +16,21 @@
             <div class="step" id="second">
                 <div class="step-title">
                     <div class="step-number">2</div>
-                    Seleccioná los clientes para los que quieras crear el código y crealos!
+                    Acá aparecen todos los códigos que se van a crear
                 </div>
                 <div class="selection">
                     <div class="list" v-if="formatedData.length > 0">
-                        <ul>
+                        <ul class="stand-out">
                             <li v-for="(obj, index) in formatedData" :key="index">
-                                <input
-                                    type="checkbox" 
-                                    :name="obj.cliente" 
-                                    :id="obj.cliente+'-'+index"
-                                    :value="obj.cliente+obj.unidad+obj.equipo"
-                                    v-model="selectedQrs"
-                                    class="checkmark"
-                                    number>
-                                <label 
-                                    :for="obj.cliente+'-'+index">
-                                    {{obj.cliente}} - {{obj.unidad}} - {{obj.equipo}}
-                                </label>
+                                <span>{{obj.cliente}} - {{obj.unidad}} - {{obj.equipo}}</span>
                             </li>
                         </ul>
                         <div class="buttons">
-                            <button type="button" class="button-violet" 
-                                @click="checkAll();selectedQrs.length = 0">Seleccionar todos</button>
-                            <button type="button" class="button-green"
-                                @click="crearQrs">Crear QRs!</button>
+                            <button 
+                                type="button" 
+                                class="button-green"
+                                @click="crearQrs">Crear y Descargar QRs
+                            </button>
                         </div>
                     </div>
                     <div class="empty-message" v-else>
@@ -70,7 +60,6 @@ textarea{
 .selection{
     display: flex;
     flex-direction: column;
-    gap: .5rem;
 }
 .step{
     display: flex;
@@ -108,7 +97,6 @@ textarea{
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    padding: .5rem;
     height: auto;
 }
 .list .buttons{
@@ -133,6 +121,12 @@ textarea{
     box-shadow: none;
     cursor: pointer;
 }
+.stand-out{
+    box-shadow: 5px 5px 7px #aaafd9,
+                -5px -5px 10px #d8dff1;
+    border-radius: 10px;
+    overflow-y: scroll;
+}
 .button-violet{
     background: #4f29f0;
     color: white;
@@ -145,16 +139,12 @@ textarea{
 }
 .list ul li{
     list-style: none;
-    height: 2.3rem;
-    width: fit-content;
+    min-height: 2.3rem;
+    width: 100%;
     padding: 0 .5rem;
     display: flex;
     align-items: center;
     transition: all .3s ease-in-out;
-}
-.list ul li:hover{
-    box-shadow: 5px 5px 7px #aaafd9,
-                -5px -5px 10px #d8dff1;
 }
 .list ul li label {
     color: #414856;
@@ -323,10 +313,11 @@ textarea{
 <script>
 import axios from 'axios'
 import {computed, ref} from 'vue'
+
 export default {
     name:'Code Create',
     setup() {
-        const basicData = ref('[{"cliente": "HOSPITAL#1", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 1"}, {"cliente": "HOSPITAL#2", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 2"}, {"cliente": "HOSPITAL#3", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 3"}, {"cliente": "HOSPITAL#4", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 4"}, {"cliente": "HOSPITAL#5", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 5"}, {"cliente": "HOSPITAL#6", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 6"}, {"cliente": "HOSPITAL7", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 7"}, {"cliente": "HOSPITAL#8", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 8"}]')
+        const basicData = ref('[{"cliente": "HOSPITAL1", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 1"}, {"cliente": "HOSPITAL2", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 2"}, {"cliente": "HOSPITAL3", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 3"}, {"cliente": "HOSPITAL4", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 4"}, {"cliente": "HOSPITAL5", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 5"}, {"cliente": "HOSPITAL6", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 6"}, {"cliente": "HOSPITAL7", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 7"}, {"cliente": "HOSPITAL8", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 8"}]')
         const parsedData = computed(() => {
             return JSON.parse(basicData.value)
         })
@@ -336,60 +327,29 @@ export default {
         const formatedData = computed(() => {
             return basicData.value ? parsedData.value : []
         })
-        const selectedQrs = ref([])
-        var allSelected = ref(false)
-        const allSelectedQrs = ref([])
-        const hayAlgunSeleccionado = computed (() => {
-            return selectedQrs.value.length != 0
-        })
-        const checkAll = () => {
-            let inputs = Array.from(document.getElementsByClassName('checkmark'))
-            if(!hayAlgunSeleccionado.value){
-                if(allSelected.value){
-                    inputs.forEach(input => input.checked = false)
-                    allSelectedQrs.value.length = 0
-                    allSelected.value = false
-                } else {
-                    inputs.forEach(input => input.checked = true)
-                    formatedData.value.forEach(registro => allSelectedQrs.value.push(registro))
-                    //TODO: Probar que pasa si agrego todo a selectedQrs, a ver si sigue rompiendo
-                    allSelected.value = true
-                }
-            } else {
-                inputs.forEach(input => input.checked = true)
-            }
-        }
-        const postQr = (qrArray) => {
-            qrArray.forEach(regBody => {
-                axios.post('http://localhost:3001/qr/create', regBody)
-            })
-        }
-        const crearQrs = () => {
-            if(allSelected.value){
-                console.log('Te imprimo todos')
-                console.log(allSelectedQrs.value)
-                postQr(allSelected.value)
-            } else if(hayAlgunSeleccionado.value) {
-                console.log('Te imprimo algunos')
-                console.log(selectedQrs.value)
-                postQr(selectedQrs.value)
-            } else {
-                console.log('No hay ningun registro seleccionado')
-            }
+        const emit = ''
+        const crearQrs = function() {
+            axios.post('http://localhost:3001/qr/create', formatedData.value)
+                .then((response) => {
+                    this.emit.emit('recargarTabla')
+                    console.log(response)
+                })
+                .catch((e) => {
+                    console.log(e)
+                    console.log('No se pudieron crear los códigos QR')
+                })
         }
         return {
             basicData,
             parsedData,
             totalRegistros,
             formatedData,
-            selectedQrs,
-            allSelected,
-            allSelectedQrs,
-            hayAlgunSeleccionado,
-            checkAll,
-            postQr,
-            crearQrs
+            crearQrs,
+            emit
         }
     },
+    created(){
+        this.emit = this.emitter
+    }
 }
 </script>

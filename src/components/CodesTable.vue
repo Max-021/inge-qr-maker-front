@@ -26,8 +26,12 @@
                     <td>{{codigo.contacto}}</td>
                     <td>{{codigo.telefono}}</td>
                     <td>{{codigo.equipo}}</td>
-                    <td class="acciones">
-
+                    <td>
+                        <div class="actions">
+                            <button class="button-green button-add"></button>
+                            <button class="button-yellow button-delete"></button>
+                            <button class="button-red button-delete"></button>
+                        </div>
                     </td>
                 </tr>
             </tbody>
@@ -129,50 +133,40 @@ table tbody tr td{
     padding: 5px;
     margin: 0 3px;
     border-radius: 50%;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    border: none;
+    box-shadow: 0 1px 1px hsl(0deg 0% 0% / 0.1),
+                0 2px 2px hsl(0deg 0% 0% / 0.1),
+                0 4px 4px hsl(0deg 0% 0% / 0.1),
+                0 8px 8px hsl(0deg 0% 0% / 0.1);;
     background-size: 15px 15px;
     background-position: center;
-    transition: all 1s ease;
+    transition: all .3s ease-in-out;
     background-repeat: no-repeat;
 }
 .actions button:hover{
-    transform: rotate(360deg);
+    box-shadow: none;
+    cursor: pointer;
 }
 .button-add{
-    /* background-image: url('@/assets/images/exito.svg'); */
-}
-.button-check{
-    /* background-image: url('@/assets/images/exito.svg'); */
+    background-image: url('~@/assets/images/exito.svg');
 }
 .button-edit{
-    /* background-image: url('@/assets/images/editar.svg'); */
+    background-image: url('~@/assets/images/editar.svg');
 }
 .button-delete{
-    /* background-image: url('@/assets/images/basura.svg'); */
+    background-image: url('~@/assets/images/basura.svg');
 }
-.button-store{
-    /* background-image: url('@/assets/images/archivo.svg'); */
-}
-.button-back-time{
-    /* background-image: url('@/assets/images/reloj.svg'); */
-}
-.button-bug-search{
-    /* background-image: url('./images/el-malware.svg'); */
-}
-.button-info{
-    position: absolute;
-    top: -50%;
-    right: 0;
-    height: 1.2rem;
-    width: 1.2rem;
-    background-repeat: no-repeat;
-    /* background-image: url('@/assets/images/exclamacion.svg'); */
+.button-green{
+    background-color: rgb(161, 235, 52);
 }
 .button-blue{
-  background: rgb(107, 163, 247);
+    background-color: rgb(107, 163, 247);
+}
+.button-red{
+    background-color: rgb(248, 113, 140);
 }
 .button-yellow{
-  background: rgb(255, 217, 0);
+    background-color: rgb(255, 217, 0);
 }
 </style>
 <script>
@@ -191,7 +185,7 @@ export default {
                 axios.get('http://localhost:3001/qr/')
                 .then(response => {
                     codigosCreados.value = response.data
-                    // isLoading.value = false
+                    isLoading.value = false
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -199,7 +193,7 @@ export default {
             }
             catch(e){
                 console.log(e)
-                // isLoading.value = false
+                isLoading.value = false
             }
         }
         return {
@@ -207,6 +201,11 @@ export default {
             codigosCreados,
             isLoading
         }
+    },
+    mounted(){
+        this.emitter.on('recargarTabla', () => {
+            this.getQrs()
+        })  
     },
     created(){
         this.getQrs()
