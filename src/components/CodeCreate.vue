@@ -313,6 +313,7 @@ textarea{
 <script>
 import axios from 'axios'
 import {computed, ref} from 'vue'
+import Swal from 'sweetalert2'
 
 export default {
     name:'Code Create',
@@ -329,15 +330,32 @@ export default {
         })
         const emit = ''
         const crearQrs = function() {
-            axios.post('http://localhost:3001/qr/create', formatedData.value)
-                .then((response) => {
-                    this.emit.emit('recargarTabla')
-                    console.log(response)
-                })
-                .catch((e) => {
-                    console.log(e)
-                    console.log('No se pudieron crear los códigos QR')
-                })
+            Swal.fire({
+                title: 'Creando los códigos QR . . .',
+                didOpen: () => {
+                    Swal.showLoading()
+                    axios.post('http://localhost:3001/qr/create', formatedData.value)
+                        .then(response => {
+                            if(response) {
+                                this.emit.emit('recargarTabla')
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Listo!',
+                                    text: response.data,
+                                })
+                            }
+                        })
+                        .catch(error => {
+                            console.log(error)
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: error
+                            })
+                        })
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            })
         }
         return {
             basicData,
