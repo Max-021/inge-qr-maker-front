@@ -328,6 +328,7 @@ export default {
         const formatedData = computed(() => {
             return basicData.value ? parsedData.value : []
         })
+        const apiUrl = ref('http://localhost:3001/qr')
         const emit = ''
         const crearQrs = function() {
             Swal.fire({
@@ -338,10 +339,30 @@ export default {
                         .then(response => {
                             if(response) {
                                 this.emit.emit('recargarTabla')
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Listo!',
-                                    text: response.data,
+                                this.downloadAll(response.data.response)
+                                .then((response) => {
+                                    if(response){
+                                        downloadZip(response.data)
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: '¡Listo!',
+                                            text: 'Codigos QR descargados!'
+                                        })
+                                    }else{
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Oops...',
+                                            text: 'No se pudieron descargar los codigos'
+                                        })
+                                    }
+                                })
+                                .catch(e => {
+                                    console.log(e)
+                                        Swal.fire({
+                                        icon: 'error',
+                                        title: 'Oops...',
+                                        text: e
+                                    })        
                                 })
                             }
                         })
@@ -357,13 +378,43 @@ export default {
                 allowOutsideClick: () => !Swal.isLoading()
             })
         }
+        const downloadAll = function(registros) {
+            return new Promise((resolve, reject) => {
+                if(registros.length){
+                    axios.post(apiUrl.value+'/download', registros, {
+                        responseType: 'blob'
+                    })
+                    .then(response => {
+                        resolve(response)
+                    })
+                    .catch(e => {
+                        console.log('Error: '+ e)
+                        reject(false)
+                    })
+                } else {
+                    reject('Array de registros vacio')
+                }
+            })
+        }
+        const downloadZip = function (registros) {
+            var fileURL = window.URL.createObjectURL(new Blob([registros]));
+            var fileLink = document.createElement('a');
+
+            fileLink.href = fileURL;
+            fileLink.setAttribute('download', 'Codigos QR.zip');
+            document.body.appendChild(fileLink);
+
+            fileLink.click();
+        }
         return {
             basicData,
             parsedData,
             totalRegistros,
             formatedData,
             crearQrs,
-            emit
+            emit,
+            downloadAll,
+            downloadZip
         }
     },
     created(){

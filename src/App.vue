@@ -76,6 +76,9 @@ textarea:focus{
 .button-green{
   background: rgb(161, 235, 52);
 }
+.button-red{
+  background: rgb(255, 55, 32);
+}
 
 @keyframes showUp {
     0%{
