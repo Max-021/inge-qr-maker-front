@@ -314,6 +314,7 @@ textarea{
 import axios from 'axios'
 import {computed, ref} from 'vue'
 import Swal from 'sweetalert2'
+import {download} from '../assets/js/qrUtils'
 
 export default {
     name:'Code Create',
@@ -342,7 +343,8 @@ export default {
                                 this.downloadAll(response.data.response)
                                 .then((response) => {
                                     if(response){
-                                        downloadZip(response.data)
+                                        let qrZip = new Blob([response.data])
+                                        download(qrZip, 'Códigos Qr.zip')
                                         Swal.fire({
                                             icon: 'success',
                                             title: '¡Listo!',
@@ -358,7 +360,7 @@ export default {
                                 })
                                 .catch(e => {
                                     console.log(e)
-                                        Swal.fire({
+                                    Swal.fire({
                                         icon: 'error',
                                         title: 'Oops...',
                                         text: e
@@ -396,16 +398,6 @@ export default {
                 }
             })
         }
-        const downloadZip = function (registros) {
-            var fileURL = window.URL.createObjectURL(new Blob([registros]));
-            var fileLink = document.createElement('a');
-
-            fileLink.href = fileURL;
-            fileLink.setAttribute('download', 'Codigos QR.zip');
-            document.body.appendChild(fileLink);
-
-            fileLink.click();
-        }
         return {
             basicData,
             parsedData,
@@ -413,8 +405,7 @@ export default {
             formatedData,
             crearQrs,
             emit,
-            downloadAll,
-            downloadZip
+            downloadAll
         }
     },
     created(){

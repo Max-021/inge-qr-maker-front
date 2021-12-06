@@ -28,7 +28,7 @@
                     <td>{{codigo.equipo}}</td>
                     <td>
                         <div class="actions">
-                            <button class="button-green button-add"></button>
+                            <button class="button-green button-add" @click="descargarQr(codigo._id)"></button>
                             <button class="button-yellow button-delete"></button>
                             <button class="button-red button-delete"></button>
                         </div>
@@ -171,13 +171,15 @@ table tbody tr td{
 </style>
 <script>
 import axios from 'axios'
-import {ref} from 'vue'
+import {ref, inject} from 'vue'
 import Spinner from './Spinner.vue'
+import {download} from '../assets/js/qrUtils'
 
 export default {
     components:{Spinner},
     setup() {
         const codigosCreados = ref([])
+        const apiUrl = inject('apiUrl')
         const isLoading = ref(false)
         const getQrs = () => {
             isLoading.value = true
@@ -196,10 +198,23 @@ export default {
                 isLoading.value = false
             }
         }
+        const descargarQr = (id) => {
+            axios.get(apiUrl+'/download/'+id,{
+                        responseType: 'blob'
+                    })
+                .then(response => {
+                    let imagen = new Blob([response.data], {type:'image/png'}) 
+                    download(imagen, response.headers.name)
+                })
+                .catch(e => {
+                    console.log(e)
+                })
+        }
         return {
             getQrs,
             codigosCreados,
-            isLoading
+            isLoading,
+            descargarQr
         }
     },
     mounted(){
