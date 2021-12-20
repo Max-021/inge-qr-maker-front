@@ -1,50 +1,59 @@
 <template>
     <div class="container">
-        <h1>Códigos creados</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>Cliente</th>
-                    <th>Unidad</th>
-                    <th>Telefono</th>
-                    <th>Contacto</th>
-                    <th>Equipo</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody v-if="isLoading">
-                <tr>
-                    <td colspan="6" class="spinner-container">
-                        <Spinner></Spinner>
-                    </td>
-                </tr>
-            </tbody>
-            <tbody v-else-if="codigosCreados.length">
-                <tr v-for="(codigo, index) in codigosCreados" :key="index">
-                    <td>{{codigo.cliente}}</td>
-                    <td>{{codigo.unidad}}</td>
-                    <td>{{codigo.contacto}}</td>
-                    <td>{{codigo.telefono}}</td>
-                    <td>{{codigo.equipo}}</td>
-                    <td>
-                        <div class="actions">
-                            <button class="button-green button-add" @click="descargarQr(codigo._id)"></button>
-                            <button class="button-yellow button-delete"></button>
-                            <button class="button-red button-delete"></button>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-            <tbody v-else>
-                <tr>
-                    <td colspan="6" class="no-results">
-                        <h3>
-                            Todavía no hay códigos creados
-                        </h3>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="pre-content">
+            <h1>Códigos creados</h1>
+            <div class="buttons">
+                <button data-toggle="modal" data-target="#myModal" type="button" @click="equiposSeleccionados = codigos;isEditing = false">Exportar todos los equipos</button>
+                <button>Exportar algunos equipos</button>
+            </div>
+        </div>
+        <div class="content">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Unidad</th>
+                        <th>Telefono</th>
+                        <th>Contacto</th>
+                        <th>Equipo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody v-if="isLoading">
+                    <tr>
+                        <td colspan="6" class="spinner-container">
+                            <Spinner></Spinner>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody v-else-if="codigosCreados.length">
+                    <tr v-for="(codigo, index) in codigosCreados" :key="index">
+                        <td>{{codigo.cliente}}</td>
+                        <td>{{codigo.unidad}}</td>
+                        <td>{{codigo.contacto}}</td>
+                        <td>{{codigo.telefono}}</td>
+                        <td>{{codigo.equipo}}</td>
+                        <td>
+                            <div class="actions">
+                                <button class="button-green button-add" @click="descargarQr(codigo._id)"></button>
+                                <button class="button-yellow button-delete"></button>
+                                <button class="button-red button-delete"></button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody v-else>
+                    <tr>
+                        <td colspan="6" class="no-results">
+                            <h3>
+                                Todavía no hay códigos creados
+                            </h3>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </template>
 <style scoped>
@@ -54,30 +63,51 @@
     flex-direction: column;
     gap: 1rem;
 }
+.pre-content{
+    height: fit-content;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.buttons{
+    display: flex;
+    width: inherit;
+    flex-direction: row;
+    width: 100%;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
 h1{
     color: hsla(0, 0%, 25%, .9);
 }
 th, tr{
     height: 3rem;
 }
-table{
+.content{
     position: relative;
-    width: 100%;
+    max-height: 30rem;
+    overflow-y: scroll;
+}
+table{
     border-spacing: 0;
     border: none;
     box-shadow: 0px 0px 10px #aaafd9;
     animation: showUp 1.5s;
+    width: 100%;
 }
 table thead th{
     box-shadow: 5px 5px 5px #aaafd9;
     color: white;
-    position: sticky;
-    top: 0;
     background: #494d75;
     font-size: 1.2em;
-    z-index: 10;
     text-align: center;
     padding: 0 10px;
+    position: sticky;
+    z-index: 10;
+    top: 0;
 }
 table thead th:last-child{
     width: 12%;
@@ -100,6 +130,38 @@ table tbody tr td{
     padding-top: .5em;
     padding-bottom: .5em;
     position: relative;
+}
+button{
+    display: flex;
+    justify-content: space-around;
+    padding: .3rem;
+    align-items: center;
+    background: none;
+    border: none;
+    box-shadow: 5px 5px 10px #aaafd9,
+                -5px -5px 10px #e6edff;
+    border-radius: 15px;
+    transition: all .3s;
+    font-size: 2vh;
+    letter-spacing: 1.4px;
+    animation: showUp 1s;
+}
+button img{
+    transition: all 1s;
+}
+button:hover{
+    cursor: pointer;
+    transform: scale(1.05);
+}
+button:hover .icon{
+    transform: rotate(360deg);
+}
+button:active{
+    box-shadow: inset -5px -5px 7px #e6edff,
+                inset 5px 5px 7px #aaafd9;
+}
+button:focus{
+    outline: none;
 }
 .spinner-container{
     width: 100%;
@@ -167,6 +229,19 @@ table tbody tr td{
 }
 .button-yellow{
     background-color: rgb(255, 217, 0);
+}
+@media screen and (max-width: 500px) {
+    .content{
+        overflow-x: scroll;
+        height: 30rem;
+    }
+    table{
+        position: absolute;
+        top: 0;
+    }
+    button{
+        width: 100%;
+    }
 }
 </style>
 <script>

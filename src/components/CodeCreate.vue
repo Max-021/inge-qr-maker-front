@@ -8,7 +8,7 @@
                     <div class="step-number">1</div>
                     Pegá la información
                 </div>
-                <textarea name="qrs-json" id="qrs-json" cols="30" rows="10" class="incrusted" v-model="basicData">
+                <textarea name="qrs-json" id="qrs-json" cols="10" rows="14" class="incrusted" v-model="basicData">
                 </textarea>
                 Cantidad de registros: {{totalRegistros}}
             </div>
@@ -47,15 +47,12 @@
     flex-direction: column;
     gap: 1rem;
     padding: 1rem;
+    width: 100%;
 }
 .inputs{
-    display: grid;
-    grid-template-columns: 7fr 5fr;
-    grid-template-rows: auto;
+    display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
-}
-textarea{
-    height: 300px;
 }
 .selection{
     display: flex;
@@ -80,6 +77,9 @@ textarea{
     justify-content: center;
     align-items: center;
     font-weight: bolder;
+}
+#first, #second{
+    flex: 1;
 }
 .empty-message{
     width: 100%;
@@ -309,6 +309,11 @@ textarea{
     box-shadow: 0 -15px 0 0px #4F29F0, 14px -8px 0 0px #4F29F0, 14px 8px 0 0px #4F29F0, 0 15px 0 0px #4F29F0, -14px 8px 0 0px #4F29F0, -14px -8px 0 0px #4F29F0;
   }
 }
+@media screen and (max-width: 600px) {
+    .inputs{
+        flex-direction: column;
+    }
+}
 </style>
 <script>
 import axios from 'axios'
@@ -319,7 +324,7 @@ import {download} from '../assets/js/qrUtils'
 export default {
     name:'Code Create',
     setup() {
-        const basicData = ref('[{"cliente": "HOSPITAL1", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 1"}, {"cliente": "HOSPITAL2", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 2"}, {"cliente": "HOSPITAL3", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 3"}, {"cliente": "HOSPITAL4", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 4"}, {"cliente": "HOSPITAL5", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 5"}, {"cliente": "HOSPITAL6", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 6"}, {"cliente": "HOSPITAL7", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 7"}, {"cliente": "HOSPITAL8", "unidad": "HTAL. LARCADE", "contacto": "", "telefono": "","equipo": "EQUIPO 8"}]')
+        const basicData = ref('')
         const parsedData = computed(() => {
             return JSON.parse(basicData.value)
         })
