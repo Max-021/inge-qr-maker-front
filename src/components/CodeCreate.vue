@@ -132,10 +132,12 @@
     color: white;
 }
 .list ul{
-    height: 300px;
+    height: fit-content;
+    max-height: 300px;
     overflow-y: scroll;
     display: flex;
     flex-direction: column;
+    padding: .3rem 0;
 }
 .list ul li{
     list-style: none;

@@ -3,12 +3,11 @@
         <div class="pre-content">
             <h1>Códigos creados</h1>
             <div class="buttons">
-                <button data-toggle="modal" data-target="#myModal" type="button" @click="equiposSeleccionados = codigos;isEditing = false">Exportar todos los equipos</button>
-                <button>Exportar algunos equipos</button>
+                <button @click="descargarTodosLosQr()">Descargar todos los equipos</button>
+                <button disabled>Descargar algunos equipos</button>
             </div>
         </div>
         <div class="content">
-
             <table>
                 <thead>
                     <tr>
@@ -247,6 +246,7 @@ button:focus{
 <script>
 import axios from 'axios'
 import {ref, inject} from 'vue'
+import Swal from 'sweetalert2'
 import Spinner from './Spinner.vue'
 import {download} from '../assets/js/qrUtils'
 
@@ -274,22 +274,67 @@ export default {
             }
         }
         const descargarQr = (id) => {
-            axios.get(apiUrl+'/download/'+id,{
+            Swal.fire({
+                title: 'Descargando los códigos QR . . .',
+                didOpen: () => {
+                    Swal.showLoading()
+                    axios.get(apiUrl+'/download/'+id,{
                         responseType: 'blob'
                     })
-                .then(response => {
-                    let imagen = new Blob([response.data], {type:'image/png'}) 
-                    download(imagen, response.headers.name)
-                })
-                .catch(e => {
-                    console.log(e)
-                })
+                    .then(response => {
+                        let imagen = new Blob([response.data], {type:'image/png'}) 
+                        download(imagen, response.headers.name)
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Listo!',
+                            text: 'Código descargado!'
+                        })
+                    })
+                    .catch(e => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'No se pudo descargar el código'
+                        })
+                        console.log(e)
+                    })
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            })
+        }
+        const descargarTodosLosQr = () => {
+            Swal.fire({
+                title: 'Descargando los códigos QR . . .',
+                didOpen: () => {
+                    Swal.showLoading()
+                    axios.get(apiUrl+'/download-all', {responseType: 'blob'})
+                        .then(response => {
+                            let imagenes = new Blob([response.data], {type: response.data.type})
+                            download(imagenes, 'Codigos QR')
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Listo!',
+                                text: 'Codigos QR descargados!'
+                            })
+                        })
+                        .catch(e => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: 'No se pudieron descargar los codigos'
+                            })
+                            console.log(e)
+                        })
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            })
         }
         return {
             getQrs,
             codigosCreados,
             isLoading,
-            descargarQr
+            descargarQr,
+            descargarTodosLosQr
         }
     },
     mounted(){
