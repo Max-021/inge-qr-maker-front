@@ -4,11 +4,14 @@
             <h1>Códigos creados</h1>
             <div class="buttons">
                 <button @click="descargarTodosLosQr()">Descargar todos los equipos</button>
-                <button disabled>Descargar algunos equipos</button>
+                <button @click="isTable = !isTable">
+                    <span v-if="isTable">Descargar algunos códigos</span>
+                    <span v-else>Volver a la tabla</span>
+                </button>
             </div>
         </div>
         <div class="content">
-            <table>
+            <table v-if="isTable">
                 <thead>
                     <tr>
                         <th>Cliente</th>
@@ -52,6 +55,16 @@
                     </tr>
                 </tbody>
             </table>
+            <div class="neomorph" v-else>
+                <ul>
+                    <li v-for="(codigo, index) in codigosCreados" :key="index">
+                        <input type="checkbox" :id="codigo._id" :value="codigo.cliente" @click="seleccionarCodigo(codigo)">
+                        <label :for="codigo._id">{{codigo.cliente}} - {{codigo.unidad}} - {{codigo.equipo}} </label>
+                    </li>
+                </ul>
+                <h3>Códigos seleccionados: {{cantidadSeleccionada}} / {{cantidadTotalCodigos}} </h3>
+                <button :class="[cantidadSeleccionada < 1 ? 'button-disabled' : 'button-green' ]" @click="descargarSeleccionados()">Descargar</button>
+            </div>
         </div>
     </div>
 </template>
@@ -87,8 +100,22 @@ th, tr{
 }
 .content{
     position: relative;
+    display: inline;
     max-height: 30rem;
+    overflow: -moz-scrollbars-vertical;
     overflow-y: scroll;
+    overflow-x: visible;
+}
+.neomorph{
+    box-shadow:  5px 5px 7px #aaafd9,
+            -5px -5px 10px #e6edff;
+    border-radius: 25px;
+    margin: 1rem .5rem;
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
 }
 table{
     border-spacing: 0;
@@ -133,7 +160,7 @@ table tbody tr td{
 button{
     display: flex;
     justify-content: space-around;
-    padding: .3rem;
+    padding: .5rem;
     align-items: center;
     background: none;
     border: none;
@@ -229,6 +256,196 @@ button:focus{
 .button-yellow{
     background-color: rgb(255, 217, 0);
 }
+.button-disabled{
+    color: gray;
+    box-shadow: inset 5px 5px 10px #aaafd9,
+                inset -5px -5px 10px #e6edff;
+}
+.button-disabled:hover{
+    transform: scale(1);
+    cursor:not-allowed;
+}
+/* Estilos de la lista seleccionable */
+ul{
+    height: fit-content;
+    max-height: 300px;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    padding: .3rem 0;
+}
+ul li{
+    list-style: none;
+    min-height: 2.3rem;
+    width: 100%;
+    padding: 0 .5rem;
+    display: flex;
+    align-items: center;
+    transition: all .3s ease-in-out;
+}
+ul li label {
+    color: #414856;
+    position: relative;
+    cursor: pointer;
+    display: grid;
+    align-items: center;
+    width: fit-content;
+    transition: color 0.3s ease;
+    width: auto;
+}
+ul li label::before, 
+ul li label::after {
+    content: "";
+    position: absolute;
+}
+ul li label::before {
+    height: 2px;
+    width: 8px;
+    left: -27px;
+    background: #4f29f0;
+    border-radius: 2px;
+    transition: background 0.3s ease;
+}
+ul li label:after {
+    height: 4px;
+    width: 4px;
+    top: 8px;
+    left: -25px;
+    border-radius: 50%;
+}
+ul li input[type="checkbox"]{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    position: relative;
+    height: 15px;
+    width: 15px;
+    outline: none;
+    border: 2px solid #4f29f0;
+    margin: 0 11px 0 0;
+    cursor: pointer;
+    background: transparent;
+    display: grid;
+    align-items: center;
+}
+ul li input[type="checkbox"]:focus{
+    box-shadow: none!important;
+}
+ul li input[type="checkbox"]:checked {
+    outline: none;
+}
+ul li input[type="checkbox"]::before, 
+ul li input[type="checkbox"]::after {
+    content: "";
+    position: absolute;
+    height: 2px;
+    top: auto;
+    background: #4f29f0;
+    border-radius: 2px;
+}
+ul li input[type="checkbox"]::before {
+    width: 0px;
+    right: 60%;
+    transform-origin: right bottom;
+}
+ul li input[type="checkbox"]::after {
+    width: 0px;
+    left: 40%;
+    transform-origin: left bottom;
+}
+ul li input[type="checkbox"]:checked::before {
+    animation: check-01 0.4s ease forwards;
+}
+ul li input[type="checkbox"]:checked::after {
+    animation: check-02 0.4s ease forwards;
+}
+ul li input[type="checkbox"]:checked + label {
+    color: #7a7c87;
+    animation: move 0.3s ease 0.1s forwards;
+}
+ul li input[type="checkbox"]:checked + label::before {
+    background: #7a7c87;
+    animation: slice 0.4s ease forwards;
+}
+ul li input[type="checkbox"]:checked + label::after {
+    animation: firework 0.5s ease forwards 0.1s;
+}
+@keyframes move {
+  50% {
+    padding-left: 8px;
+    padding-right: 0px;
+  }
+  100% {
+    padding-right: 4px;
+  }
+}
+@keyframes slice {
+  60% {
+    width: 100%;
+    left: 4px;
+  }
+  100% {
+    width: 100%;
+    left: -2px;
+    padding-left: 0;
+  }
+}
+@keyframes check-01 {
+  0% {
+    width: 4px;
+    top: auto;
+    transform: rotate(0);
+  }
+  50% {
+    width: 0px;
+    top: auto;
+    transform: rotate(0);
+  }
+  51% {
+    width: 0px;
+    top: 12px;
+    transform: rotate(45deg);
+  }
+  100% {
+    width: 5px;
+    top: 12px;
+    transform: rotate(45deg);
+  }
+}
+@keyframes check-02 {
+  0% {
+    width: 4px;
+    top: auto;
+    transform: rotate(0);
+  }
+  50% {
+    width: 0px;
+    top: auto;
+    transform: rotate(0);
+  }
+  51% {
+    width: 0px;
+    top: 12px;
+    transform: rotate(-45deg);
+  }
+  100% {
+    width: 10px;
+    top: 12px;
+    transform: rotate(-45deg);
+  }
+}
+@keyframes firework {
+  0% {
+    opacity: 1;
+    box-shadow: 0 0 0 -2px #4F29F0, 0 0 0 -2px #4F29F0, 0 0 0 -2px #4F29F0, 0 0 0 -2px #4F29F0, 0 0 0 -2px #4F29F0, 0 0 0 -2px #4F29F0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    box-shadow: 0 -15px 0 0px #4F29F0, 14px -8px 0 0px #4F29F0, 14px 8px 0 0px #4F29F0, 0 15px 0 0px #4F29F0, -14px 8px 0 0px #4F29F0, -14px -8px 0 0px #4F29F0;
+  }
+}
 @media screen and (max-width: 500px) {
     .content{
         overflow-x: scroll;
@@ -254,8 +471,10 @@ export default {
     components:{Spinner},
     setup() {
         const codigosCreados = ref([])
+        var codigosSeleccionados = ref([])
         const apiUrl = inject('apiUrl')
         const isLoading = ref(false)
+        const isTable = ref(true)
         const getQrs = () => {
             isLoading.value = true
             try{
@@ -329,12 +548,82 @@ export default {
                 allowOutsideClick: () => !Swal.isLoading()
             })
         }
+        const seleccionarCodigo = (codigo) => {
+            if(codigosSeleccionados.value.find(cod => cod._id === codigo._id)){
+                let index = codigosSeleccionados.value.indexOf(cod => cod._id === codigo._id)
+                codigosSeleccionados.value.splice(index, 1)
+            } else {
+                codigosSeleccionados.value.push(codigo)
+            }
+        }
+        const prepararSeleccionados = function(){
+            return new Promise((resolve, reject) => {
+                axios.post(apiUrl+'/prepare-array', codigosSeleccionados.value)
+                    .then(response => {
+                        if(response.data.length > 0){
+                            resolve(response.data)
+                        } else {
+                            reject('El array vino vacio!')
+                        }
+                    })
+                    .catch(e => {
+                        console.log(e)
+                        reject(e)
+                    })
+            })
+        }
+        const descargarSeleccionados = () => {
+            Swal.fire({
+                title: 'Descargando los códigos QR . . .',
+                didOpen: () => {
+                    Swal.showLoading()
+                    prepararSeleccionados()
+                        .then(array => {
+                            axios.post(apiUrl+'/download', array, {responseType: 'blob'})
+                                .then(response => {
+                                    let imagenes = new Blob([response.data], {type: response.data.type})
+                                    download(imagenes, 'Codigos QR')
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: '¡Listo!',
+                                        text: 'Códigos QR descargados!'
+                                    })
+                                })
+                                .catch(e => {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Oops...',
+                                        text: 'No se pudieron descargar los codigos'
+                                    })
+                                    console.log(e)
+                                })
+                        })
+                        .catch(e => {
+                            console.log(e)
+                        })
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            })
+        }
         return {
             getQrs,
             codigosCreados,
+            codigosSeleccionados,
             isLoading,
+            isTable,
             descargarQr,
-            descargarTodosLosQr
+            descargarTodosLosQr,
+            seleccionarCodigo,
+            prepararSeleccionados,
+            descargarSeleccionados
+        }
+    },
+    computed:{
+        cantidadSeleccionada(){
+            return this.codigosSeleccionados.length
+        },
+        cantidadTotalCodigos(){
+            return this.codigosCreados.length
         }
     },
     mounted(){
