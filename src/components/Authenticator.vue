@@ -67,12 +67,13 @@
     }
 </style>
 <script>
+import {ref} from 'vue'
 import axios from 'axios'
 import Swal from 'sweetalert2'
 
 export default {
     setup() {
-        const key = ''
+        const key = ref('')
         return {
             key
         }
