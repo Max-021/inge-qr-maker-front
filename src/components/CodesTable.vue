@@ -16,8 +16,8 @@
                     <tr>
                         <th>Cliente</th>
                         <th>Unidad</th>
-                        <th>Telefono</th>
-                        <th>Contacto</th>
+                        <!-- <th>Telefono</th>
+                        <th>Contacto</th> -->
                         <th>Equipo</th>
                         <th>Acciones</th>
                     </tr>
@@ -33,8 +33,8 @@
                     <tr v-for="(codigo, index) in codigosCreados" :key="index">
                         <td>{{codigo.cliente}}</td>
                         <td>{{codigo.unidad}}</td>
-                        <td>{{codigo.contacto}}</td>
-                        <td>{{codigo.telefono}}</td>
+                        <!-- <td>{{codigo.contacto}}</td>
+                        <td>{{codigo.telefono}}</td> -->
                         <td>{{codigo.equipo}}</td>
                         <td>
                             <div class="actions">
@@ -461,7 +461,7 @@ ul li input[type="checkbox"]:checked + label::after {
 }
 </style>
 <script>
-import axios from 'axios'
+import {httpClient} from '../httpClient'
 import {ref, inject} from 'vue'
 import Swal from 'sweetalert2'
 import Spinner from './Spinner.vue'
@@ -478,7 +478,7 @@ export default {
         const getQrs = () => {
             isLoading.value = true
             try{
-                axios.get('http://localhost:3001/qr/')
+                httpClient.get('http://localhost:3001/qr/')
                 .then(response => {
                     codigosCreados.value = response.data
                     isLoading.value = false
@@ -497,7 +497,7 @@ export default {
                 title: 'Descargando los códigos QR . . .',
                 didOpen: () => {
                     Swal.showLoading()
-                    axios.get(apiUrl+'/download/'+id,{
+                    httpClient.get(apiUrl+'/download/'+id,{
                         responseType: 'blob'
                     })
                     .then(response => {
@@ -526,7 +526,7 @@ export default {
                 title: 'Descargando los códigos QR . . .',
                 didOpen: () => {
                     Swal.showLoading()
-                    axios.get(apiUrl+'/download-all', {responseType: 'blob'})
+                    httpClient.get(apiUrl+'/download-all', {responseType: 'blob'})
                         .then(response => {
                             let imagenes = new Blob([response.data], {type: response.data.type})
                             download(imagenes, 'Codigos QR')
@@ -558,7 +558,7 @@ export default {
         }
         const prepararSeleccionados = function(){
             return new Promise((resolve, reject) => {
-                axios.post(apiUrl+'/prepare-array', codigosSeleccionados.value)
+                httpClient.post(apiUrl+'/prepare-array', codigosSeleccionados.value)
                     .then(response => {
                         if(response.data.length > 0){
                             resolve(response.data)
@@ -579,7 +579,7 @@ export default {
                     Swal.showLoading()
                     prepararSeleccionados()
                         .then(array => {
-                            axios.post(apiUrl+'/download', array, {responseType: 'blob'})
+                            httpClient.post(apiUrl+'/download', array, {responseType: 'blob'})
                                 .then(response => {
                                     let imagenes = new Blob([response.data], {type: response.data.type})
                                     download(imagenes, 'Codigos QR')

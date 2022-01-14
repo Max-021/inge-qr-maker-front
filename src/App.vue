@@ -1,19 +1,37 @@
 <template>
   <div id="app">
-    <CodeCreate></CodeCreate>
-    <CodesTable></CodesTable>
+    <div v-if="isAuthenticated">
+      <CodeCreate></CodeCreate>
+      <CodesTable></CodesTable>
+    </div> 
+    <div v-else>
+      <Authenticator @verified="setAuthenticate()"></Authenticator>
+    </div>
   </div>
 </template>
 
 <script>
+import {ref} from 'vue'
 import CodesTable       from './components/CodesTable.vue'
 import CodeCreate       from './components/CodeCreate.vue'
+import Authenticator    from './components/Authenticator.vue'
 
 export default {
   name: 'App',
   components: {
     CodesTable,
-    CodeCreate
+    CodeCreate,
+    Authenticator
+  },
+  setup(){
+    let isAuthenticated = ref(false)
+    const setAuthenticate = () => {
+      isAuthenticated.value = true //TODO: Ver por qué no anda esto
+    }
+    return {
+      isAuthenticated,
+      setAuthenticate
+    }
   }
 }
 </script>

@@ -138,7 +138,7 @@
 }
 </style>
 <script>
-import axios from 'axios'
+import {httpClient} from '../httpClient'
 import {computed, ref} from 'vue'
 import Swal from 'sweetalert2'
 import {download} from '../assets/js/qrUtils'
@@ -163,7 +163,7 @@ export default {
                 title: 'Creando los códigos QR . . .',
                 didOpen: () => {
                     Swal.showLoading()
-                    axios.post('http://localhost:3001/qr/create', formatedData.value)
+                    httpClient.post('http://localhost:3001/qr/create', formatedData.value)
                         .then(response => {
                             if(response) {
                                 this.emit.emit('recargarTabla')
@@ -210,7 +210,7 @@ export default {
         const downloadAll = function(registros) {
             return new Promise((resolve, reject) => {
                 if(registros.length){
-                    axios.post(apiUrl.value+'/download', registros, {
+                    httpClient.post(apiUrl.value+'/download', registros, {
                         responseType: 'blob'
                     })
                     .then(response => {
