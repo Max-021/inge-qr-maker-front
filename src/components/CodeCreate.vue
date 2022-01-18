@@ -97,7 +97,7 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    height: auto;
+    height: 340px;
 }
 .list .buttons{
     display: flex;
@@ -126,6 +126,9 @@
                 -5px -5px 10px #d8dff1;
     border-radius: 10px;
     overflow-y: scroll;
+}
+.stand-out li{
+    padding: .5rem;
 }
 .button-violet{
     background: #4f29f0;
@@ -171,11 +174,11 @@ export default {
                                 .then((response) => {
                                     if(response){
                                         let qrZip = new Blob([response.data])
-                                        download(qrZip, 'Códigos Qr.zip')
+                                        download(qrZip, 'Códigos QR.zip')
                                         Swal.fire({
                                             icon: 'success',
                                             title: '¡Listo!',
-                                            text: 'Codigos QR descargados!'
+                                            text: 'Códigos QR descargados!'
                                         })
                                     }else{
                                         Swal.fire({

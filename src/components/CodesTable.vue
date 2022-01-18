@@ -16,8 +16,6 @@
                     <tr>
                         <th>Cliente</th>
                         <th>Unidad</th>
-                        <!-- <th>Telefono</th>
-                        <th>Contacto</th> -->
                         <th>Equipo</th>
                         <th>Acciones</th>
                     </tr>
@@ -33,8 +31,6 @@
                     <tr v-for="(codigo, index) in codigosCreados" :key="index">
                         <td>{{codigo.cliente}}</td>
                         <td>{{codigo.unidad}}</td>
-                        <!-- <td>{{codigo.contacto}}</td>
-                        <td>{{codigo.telefono}}</td> -->
                         <td>{{codigo.equipo}}</td>
                         <td>
                             <div class="actions">
@@ -157,8 +153,15 @@ table tbody tr td{
     padding-bottom: .5em;
     position: relative;
 }
+.buttons{
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    height: 50px;
+}
 button{
     display: flex;
+    height: 40px;
     justify-content: space-around;
     padding: .5rem;
     align-items: center;
@@ -167,7 +170,7 @@ button{
     box-shadow: 5px 5px 10px #aaafd9,
                 -5px -5px 10px #e6edff;
     border-radius: 15px;
-    transition: all .3s;
+    transition: all .3s ease-in-out;
     font-size: 2vh;
     letter-spacing: 1.4px;
     animation: showUp 1s;
@@ -446,17 +449,15 @@ ul li input[type="checkbox"]:checked + label::after {
     box-shadow: 0 -15px 0 0px #4F29F0, 14px -8px 0 0px #4F29F0, 14px 8px 0 0px #4F29F0, 0 15px 0 0px #4F29F0, -14px 8px 0 0px #4F29F0, -14px -8px 0 0px #4F29F0;
   }
 }
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 518px) {
     .content{
         overflow-x: scroll;
         height: 30rem;
-    }
-    table{
-        position: absolute;
-        top: 0;
+        margin-top: 2rem;
     }
     button{
         width: 100%;
+        height: 30px;
     }
 }
 </style>
@@ -479,17 +480,26 @@ export default {
             isLoading.value = true
             try{
                 httpClient.get('http://localhost:3001/qr/')
-                .then(response => {
-                    codigosCreados.value = response.data
-                    isLoading.value = false
-                })
-                .catch(function (error) {
-                    console.log(error);
-                })
+                    .then(response => {
+                        codigosCreados.value = response.data
+                        isLoading.value = false
+                    })
+                    .catch(function (error) {
+                        console.log(error)
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Puede que tu key de acceso haya caducado. Proba generando una nueva clave y recargando el sitio web.'
+                        })
+                    })
             }
             catch(e){
-                console.log(e)
-                isLoading.value = false
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: e
+                })
+                isLoading.value = true
             }
         }
         const descargarQr = (id) => {
@@ -529,7 +539,7 @@ export default {
                     httpClient.get(apiUrl+'/download-all', {responseType: 'blob'})
                         .then(response => {
                             let imagenes = new Blob([response.data], {type: response.data.type})
-                            download(imagenes, 'Codigos QR')
+                            download(imagenes, 'Códigos QR')
                             Swal.fire({
                                 icon: 'success',
                                 title: '¡Listo!',
@@ -582,7 +592,7 @@ export default {
                             httpClient.post(apiUrl+'/download', array, {responseType: 'blob'})
                                 .then(response => {
                                     let imagenes = new Blob([response.data], {type: response.data.type})
-                                    download(imagenes, 'Codigos QR')
+                                    download(imagenes, 'Códigos QR')
                                     Swal.fire({
                                         icon: 'success',
                                         title: '¡Listo!',

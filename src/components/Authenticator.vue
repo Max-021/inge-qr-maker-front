@@ -84,7 +84,6 @@ export default {
             axios.post('http://localhost:3001/verify', {token: this.key})
                 .then(response => {
                     if(response.data.isValidated){
-                        console.log('Verificacion ok!')
                         localStorage.setItem('inge_access_token', tokenPartido[1])
                         this.$emit('verified')
                     } else {
