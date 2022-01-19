@@ -479,7 +479,7 @@ export default {
         const getQrs = () => {
             isLoading.value = true
             try{
-                httpClient.get('http://localhost:3001/qr/')
+                httpClient.get(apiUrl+'/')
                     .then(response => {
                         codigosCreados.value = response.data
                         isLoading.value = false

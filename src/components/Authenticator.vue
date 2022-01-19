@@ -67,21 +67,23 @@
     }
 </style>
 <script>
-import {ref} from 'vue'
+import {inject, ref} from 'vue'
 import axios from 'axios'
 import Swal from 'sweetalert2'
 
 export default {
     setup() {
         const key = ref('')
+        const basePath = inject('basePath')
         return {
-            key
+            key,
+            basePath
         }
     },
     methods:{
         autenticar: function(){
             let tokenPartido = this.key.split(' ', 2)
-            axios.post('http://localhost:3001/verify', {token: this.key})
+            axios.post(this.basePath+'/verify', {token: this.key})
                 .then(response => {
                     if(response.data.isValidated){
                         localStorage.setItem('inge_access_token', tokenPartido[1])

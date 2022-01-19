@@ -97,7 +97,7 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    height: 340px;
+    max-height: 340px;
 }
 .list .buttons{
     display: flex;
@@ -142,7 +142,7 @@
 </style>
 <script>
 import {httpClient} from '../httpClient'
-import {computed, ref} from 'vue'
+import {computed, inject, ref} from 'vue'
 import Swal from 'sweetalert2'
 import {download} from '../assets/js/qrUtils'
 
@@ -159,14 +159,14 @@ export default {
         const formatedData = computed(() => {
             return basicData.value ? parsedData.value : []
         })
-        const apiUrl = ref('http://localhost:3001/qr')
+        const apiUrl = inject('apiUrl')
         const emit = ''
         const crearQrs = function() {
             Swal.fire({
                 title: 'Creando los códigos QR . . .',
                 didOpen: () => {
                     Swal.showLoading()
-                    httpClient.post('http://localhost:3001/qr/create', formatedData.value)
+                    httpClient.post(apiUrl+'/create', formatedData.value)
                         .then(response => {
                             if(response) {
                                 this.emit.emit('recargarTabla')
@@ -213,7 +213,7 @@ export default {
         const downloadAll = function(registros) {
             return new Promise((resolve, reject) => {
                 if(registros.length){
-                    httpClient.post(apiUrl.value+'/download', registros, {
+                    httpClient.post(apiUrl+'/download', registros, {
                         responseType: 'blob'
                     })
                     .then(response => {
