@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 export const httpClient = axios.create({
-    timeout:10000
+    timeout:0
 })
 
 const getClientToken = () => localStorage.getItem('inge_access_token');
