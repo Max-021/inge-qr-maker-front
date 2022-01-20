@@ -8,6 +8,7 @@
                     <span v-if="isTable">Descargar algunos códigos</span>
                     <span v-else>Volver a la tabla</span>
                 </button>
+                <button class="button-red" v-if="!tamosEnDev" @click="borrarTodo()">Borrar todo</button>
             </div>
         </div>
         <div class="content">
@@ -476,6 +477,7 @@ export default {
         const apiUrl = inject('apiUrl')
         const isLoading = ref(false)
         const isTable = ref(true)
+        const emit = ''
         const getQrs = () => {
             isLoading.value = true
             try{
@@ -494,6 +496,7 @@ export default {
                     })
             }
             catch(e){
+                console.log(e)
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
@@ -538,6 +541,7 @@ export default {
                     Swal.showLoading()
                     httpClient.get(apiUrl+'/download-all', {responseType: 'blob'})
                         .then(response => {
+                            console.log(response)
                             let imagenes = new Blob([response.data], {type: response.data.type})
                             download(imagenes, 'Códigos QR')
                             Swal.fire({
@@ -615,6 +619,19 @@ export default {
                 allowOutsideClick: () => !Swal.isLoading()
             })
         }
+        const borrarTodo = () => {
+            isLoading.value = true
+            httpClient.get(apiUrl+'/delete-all')
+                .then(response => {
+                    console.log(response)
+                    isLoading.value = false
+                    getQrs()
+                })
+                .catch(e => {
+                    console.log(e)
+                    isLoading.value = false
+                })
+        }
         return {
             getQrs,
             codigosCreados,
@@ -625,7 +642,9 @@ export default {
             descargarTodosLosQr,
             seleccionarCodigo,
             prepararSeleccionados,
-            descargarSeleccionados
+            descargarSeleccionados,
+            borrarTodo,
+            emit
         }
     },
     computed:{
@@ -634,6 +653,9 @@ export default {
         },
         cantidadTotalCodigos(){
             return this.codigosCreados.length
+        },
+        tamosEnDev(){
+            return process.env.NODE_ENV === 'production'
         }
     },
     mounted(){
