@@ -18,7 +18,7 @@
                         <th>Cliente</th>
                         <th>Unidad</th>
                         <th>Equipo</th>
-                        <th>Acciones</th>
+                        <!-- <th>Acciones</th> -->
                     </tr>
                 </thead>
                 <tbody v-if="isLoading">
@@ -33,13 +33,13 @@
                         <td>{{codigo.cliente}}</td>
                         <td>{{codigo.unidad}}</td>
                         <td>{{codigo.equipo}}</td>
-                        <td>
+                        <!-- <td>
                             <div class="actions">
                                 <button class="button-green button-add" @click="descargarQr(codigo._id)"></button>
                                 <button class="button-yellow button-delete"></button>
                                 <button class="button-red button-delete"></button>
                             </div>
-                        </td>
+                        </td> -->
                     </tr>
                 </tbody>
                 <tbody v-else>
