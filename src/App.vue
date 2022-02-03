@@ -1,7 +1,6 @@
 <template>
   <div id="app">
     <div v-if="isAuthenticated">
-      <Timer></Timer>
       <CodeCreate></CodeCreate>
       <CodesTable></CodesTable>
     </div> 
@@ -16,7 +15,6 @@ import {ref} from 'vue'
 import CodesTable       from './components/CodesTable.vue'
 import CodeCreate       from './components/CodeCreate.vue'
 import Authenticator    from './components/Authenticator.vue'
-import Timer            from './components/Timer.vue'
 import TitleMixin       from './assets/js/titleMixin'
 
 export default {
@@ -25,8 +23,7 @@ export default {
   components: {
     CodesTable,
     CodeCreate,
-    Authenticator,
-    Timer
+    Authenticator
   },
   title(){
     return 'Ingeray QR System'
